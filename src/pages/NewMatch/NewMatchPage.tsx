@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, CalendarDays, LayoutTemplate } from 'lucide-react';
 import { MatchInfoForm } from '../../components/MatchForm/MatchInfoForm';
+import { NextMatchCard } from '../../components/NextMatchCard';
 import { TemplateThumb, templatesFor } from '../../components/Editor/TemplatePickerModal';
 import { emptyMatch, useApp } from '../../store/appStore';
 import { useRoute } from '../../store/routeStore';
@@ -41,6 +42,8 @@ export function NewMatchPage() {
           Crea e apri l'editor <ArrowRight size={15} />
         </button>
       </div>
+
+      <NextMatchCard onUse={patch} />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.25fr) minmax(0, 1fr)', gap: 18, alignItems: 'start' }}>
         <div className="card">

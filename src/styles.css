@@ -581,9 +581,11 @@ input[type='checkbox'] {
 .logo-box {
   width: 56px;
   height: 56px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
+  flex: none;
 }
 .logo-box img {
   max-width: 100%;

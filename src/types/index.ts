@@ -198,4 +198,6 @@ export interface League {
   api?: { endpoint: string; key: string };
   /** Club's Tuttocampo standings widget (WidgetV2/Classifica/<id>). undefined = default, '' = disabled. */
   widgetUrl?: string;
+  /** Club's Tuttocampo "Prossima partita" widget. undefined = default, '' = disabled. */
+  nextMatchWidgetUrl?: string;
 }
