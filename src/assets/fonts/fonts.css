@@ -1,0 +1,29 @@
+/* Script fonts for the main titles (MATCHDAY / HALF TIME / FULL TIME / POST MATCH). */
+@font-face {
+  font-family: 'Hearth Stone';
+  src: url('./HearthStone.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Ruthligos';
+  src: url('./Ruthligos.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Bacalisties';
+  src: url('./Bacalisties.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Hattinand';
+  src: url('./Hattinand.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}

@@ -1,0 +1,40 @@
+{
+  "name": "matchday-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/alex-brush": "5.2.5",
+    "@fontsource/allura": "5.2.5",
+    "@fontsource/barlow": "5.2.5",
+    "@fontsource/barlow-condensed": "5.2.5",
+    "@fontsource/bebas-neue": "5.2.5",
+    "@fontsource/great-vibes": "5.2.5",
+    "@fontsource/inter": "5.2.5",
+    "@fontsource/montserrat": "5.2.5",
+    "@fontsource/mrs-saint-delafield": "5.2.5",
+    "@fontsource/oswald": "5.2.5",
+    "@fontsource/playfair-display": "5.2.8",
+    "fabric": "6.9.1",
+    "idb": "8.0.0",
+    "jszip": "3.10.1",
+    "lucide-react": "0.460.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "zustand": "5.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "typescript": "5.6.3",
+    "vite": "5.4.11",
+    "vitest": "2.1.8"
+  }
+}
