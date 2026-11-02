@@ -44,7 +44,7 @@ export function StandingsPage() {
   const save = (patch: Partial<League>) => setSettings({ league: { ...league, ...patch } });
 
   const applyRows = async (rows: StandingRow[], method: StandingsSource) => {
-    const withLogos = matchLogos(rows, teams, false);
+    const withLogos = matchLogos(rows, useApp.getState().teams, false);
     await save({ rows: withLogos, updatedAt: Date.now(), updateMethod: method });
     const missing = withLogos.filter((r) => !r.logoId).length;
     toast(`Classifica aggiornata: ${rows.length} squadre${missing ? ` (${missing} senza logo in libreria)` : ''}.`, 'success');

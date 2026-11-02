@@ -146,6 +146,8 @@ export function standingsToCsv(rows: StandingRow[]): string {
 
 const NOISE = new Set(['asd', 'ssd', 'as', 'ac', 'us', 'fc', 'sc', 'ss', 'pol', 'polisportiva', 'calcio', 'football', 'club', 'sporting', 'associazione', 'sportiva', 'dilettantistica', 'societa', 'a', 's', 'd', 'srl', 'scarl', 'gs', 'cs', 'usd', 'asc']);
 
+const ARTICLES = new Set(['la', 'il', 'lo', 'le', 'i', 'gli', 'l']);
+
 export function nameTokens(name: string): string[] {
   return name
     .normalize('NFD')
@@ -163,7 +165,11 @@ export function sameTeam(a: string, b: string): boolean {
   const sa = new Set(ta);
   const common = tb.filter((t) => sa.has(t)).length;
   // All tokens of the shorter name appear in the longer one ("Folgore" ~ "A.S.D. Folgore Lacedonia").
-  return common >= Math.min(ta.length, tb.length);
+  if (common >= Math.min(ta.length, tb.length)) return true;
+  // Same letters, different spacing ("La Grav It" ~ "Gravit"), ignoring a leading article.
+  const glue = (t: string[]) => t.filter((x, i) => !(i === 0 && t.length > 1 && ARTICLES.has(x))).join('');
+  const ga = glue(ta);
+  return ga.length >= 5 && ga === glue(tb);
 }
 
 /** Fills logoId for each row from the team library (keeps manual choices). */

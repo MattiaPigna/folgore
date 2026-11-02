@@ -39,6 +39,8 @@ describe('team matching', () => {
     expect(sameTeam('A.S.D. Folgore Lacedonia', 'Folgore Lacedonia')).toBe(true);
     expect(sameTeam('Folgore', 'Folgore Lacedonia')).toBe(true);
     expect(sameTeam('Real Lacedonia', 'Folgore Lacedonia')).toBe(false);
+    expect(sameTeam('La Grav It', 'ASD Gravit')).toBe(true);
+    expect(sameTeam('Calcio Savignanese', 'Savignano Calcio')).toBe(false);
     expect(sameTeam("S. Angelo all'Esca", 'S. ANGELO ALL ESCA')).toBe(true);
   });
 
