@@ -7,6 +7,7 @@ import { useApp } from './store/appStore';
 import { useRoute } from './store/routeStore';
 import { ArchivePage } from './pages/Archive/ArchivePage';
 import { EditorPage } from './pages/Editor/EditorPage';
+import { GoalVideoPage } from './pages/GoalVideo/GoalVideoPage';
 import { LogosPage } from './pages/Logos/LogosPage';
 import { NewMatchPage } from './pages/NewMatch/NewMatchPage';
 import { SettingsPage } from './pages/Settings/SettingsPage';
@@ -66,6 +67,7 @@ export function App() {
         {route.page === 'templates' && <TemplatesPage />}
         {route.page === 'settings' && <SettingsPage />}
         {route.page === 'editor' && route.matchId && <EditorPage key={route.matchId} matchId={route.matchId} kind={route.kind ?? 'matchday'} />}
+        {route.page === 'goalvideo' && route.matchId && <GoalVideoPage key={route.matchId} matchId={route.matchId} goalId={route.goalId ?? null} />}
       </main>
       <DialogHost />
       <Toasts />

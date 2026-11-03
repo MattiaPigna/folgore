@@ -1,7 +1,10 @@
 import JSZip from 'jszip';
+import { CUSTOM_PROPS } from '../editor/fabricSetup';
 import { renderStored, templateJSON } from '../editor/render';
-import type { GraphicDoc, GraphicKind, Match, Settings, Template } from '../types';
-import { GRAPHIC_KINDS, KIND_LABELS } from '../types';
+import { buildGoalVideoDefault } from '../editor/goalVideoLayout';
+import { DEFAULT_EXTRAS } from '../editor/videoEffects';
+import type { FormatSpec, GraphicDoc, GraphicKind, Match, Settings, Template } from '../types';
+import { FORMAT_PRESETS, GRAPHIC_KINDS, KIND_LABELS } from '../types';
 
 export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
@@ -41,6 +44,15 @@ export async function ensureGraphic(match: Match, kind: GraphicKind, templates: 
   const tpl = templates.find((t) => t.id === templateId);
   const format = tpl?.format ?? match.format ?? settings.defaultFormat;
   return { format, json: await templateJSON(templateId, kind, format, templates), templateId, updatedAt: Date.now() };
+}
+
+/** Returns the saved goal-video template, or builds the default layout the first time it's opened. */
+export async function ensureGoalVideo(match: Match): Promise<GraphicDoc> {
+  if (match.goalVideo) return match.goalVideo;
+  const format: FormatSpec = { preset: 'story', width: FORMAT_PRESETS.story.width, height: FORMAT_PRESETS.story.height };
+  const objects = await buildGoalVideoDefault(format.width, format.height);
+  const json = { version: '6', background: '#000000', objects: objects.map((o) => o.toObject(CUSTOM_PROPS)) };
+  return { format, json, templateId: null, updatedAt: Date.now(), video: { duration: 7, accent: '#e11d48', extras: DEFAULT_EXTRAS } };
 }
 
 export async function renderGraphicBlob(

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeScore, creditedTeam, formatGoal, parseMinute, playerTeam, sortGoals } from './score';
+import { computeScore, creditedTeam, formatGoal, parseMinute, playerTeam, scoreAround, sortGoals } from './score';
 import type { Goal } from '../types';
 
 let n = 0;
@@ -45,5 +45,20 @@ describe('score', () => {
     expect(parseMinute("45+2'")).toEqual({ minute: 45, stoppage: 2 });
     expect(parseMinute('67')).toEqual({ minute: 67, stoppage: 0 });
     expect(parseMinute('abc')).toBeNull();
+  });
+});
+
+describe('scoreAround', () => {
+  // Goals stored out of order: must use chronological order regardless.
+  const goals = [g('home', 80, 0, 'normal', 'c'), g('away', 12, 0, 'normal', 'a'), g('home', 45, 2, 'own', 'own'), g('home', 45, 1, 'normal', 'b')];
+  const idOf = (player: string) => goals.find((x) => x.player === player)!.id;
+  it('shows the score right after that goal, not the final score', () => {
+    expect(scoreAround(goals, idOf('a'))).toEqual({ prev: { home: 0, away: 0 }, next: { home: 0, away: 1 } });
+    expect(scoreAround(goals, idOf('b'))).toEqual({ prev: { home: 0, away: 1 }, next: { home: 1, away: 1 } });
+    expect(scoreAround(goals, idOf('own'))).toEqual({ prev: { home: 1, away: 1 }, next: { home: 2, away: 1 } });
+    expect(scoreAround(goals, idOf('c'))).toEqual({ prev: { home: 2, away: 1 }, next: { home: 3, away: 1 } });
+  });
+  it('returns null for an unknown goal', () => {
+    expect(scoreAround(goals, 'x')).toBeNull();
   });
 });

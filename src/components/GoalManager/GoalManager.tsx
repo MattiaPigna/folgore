@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { ArrowDown, ArrowDownUp, ArrowUp, Check, Clapperboard, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { uid } from '../../services/database';
 import { GOAL_TYPE_LABEL, computeScore, creditedTeam, formatMinute, parseMinute, playerTeam, sortGoals } from '../../services/score';
+import { useRoute } from '../../store/routeStore';
 import type { Goal, GoalType, Match } from '../../types';
 import { confirmDialog } from '../ui';
-import { GoalCardModal } from './GoalCardModal';
 
 interface Draft {
   id: string | null;
@@ -17,11 +17,12 @@ interface Draft {
 const emptyDraft = (side: 'home' | 'away' = 'home'): Draft => ({ id: null, side, player: '', minute: '', type: 'normal' });
 
 export function GoalManager({ match, onChange }: { match: Match; onChange: (patch: Partial<Match>) => void }) {
+  const go = useRoute((s) => s.go);
   const [draft, setDraft] = useState<Draft>(emptyDraft());
   const [error, setError] = useState('');
   const [autoSort, setAutoSort] = useState(true);
-  const [cardGoal, setCardGoal] = useState<string | null>(null);
   const [lastAdded, setLastAdded] = useState<string | null>(null);
+  const openGoalVideo = (goalId: string) => go({ page: 'goalvideo', matchId: match.id, goalId });
   const ht = computeScore(match.goals, { halfOnly: true, halfEndMinute: match.halfEndMinute });
   const ft = computeScore(match.goals);
   const homeName = match.homeName || 'Casa';
@@ -158,8 +159,8 @@ export function GoalManager({ match, onChange }: { match: Match; onChange: (patc
           <input type="checkbox" checked={autoSort} onChange={(e) => setAutoSort(e.target.checked)} /> Ordina automaticamente
         </label>
         {lastAdded && match.goals.some((g) => g.id === lastAdded) && (
-          <button className="btn primary" style={{ width: '100%' }} onClick={() => (setCardGoal(lastAdded), setLastAdded(null))}>
-            <Clapperboard size={15} /> Crea la card animata del gol
+          <button className="btn primary" style={{ width: '100%' }} onClick={() => openGoalVideo(lastAdded)}>
+            <Clapperboard size={15} /> Crea il video del gol
           </button>
         )}
         <div className="goal-list">
@@ -187,7 +188,7 @@ export function GoalManager({ match, onChange }: { match: Match; onChange: (patc
                   <button className="layer-btn" title="Giù" onClick={() => move(i, 1)} disabled={i === match.goals.length - 1}>
                     <ArrowDown size={13} />
                   </button>
-                  <button className="layer-btn" title="Card gol animata (video)" onClick={() => setCardGoal(g.id)}>
+                  <button className="layer-btn" title="Video del gol" onClick={() => openGoalVideo(g.id)}>
                     <Clapperboard size={13} />
                   </button>
                   <button className="layer-btn" title="Modifica" onClick={() => edit(g)}>
@@ -246,7 +247,6 @@ export function GoalManager({ match, onChange }: { match: Match; onChange: (patc
           </div>
         )}
       </div>
-      {cardGoal && <GoalCardModal match={match} goalId={cardGoal} onClose={() => setCardGoal(null)} />}
     </div>
   );
 }

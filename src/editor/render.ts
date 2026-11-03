@@ -18,7 +18,7 @@ export interface RenderOptions {
   multiplier?: number;
 }
 
-async function withStaticCanvas<T>(width: number, height: number, fn: (c: StaticCanvas) => Promise<T>): Promise<T> {
+export async function withStaticCanvas<T>(width: number, height: number, fn: (c: StaticCanvas) => Promise<T>): Promise<T> {
   const el = document.createElement('canvas');
   const c = new StaticCanvas(el, { width, height, enableRetinaScaling: false, renderOnAddRemove: false });
   try {

@@ -48,6 +48,7 @@ export function emptyMatch(settings: Settings): Match {
     photoId: null,
     graphics: { matchday: null, halftime: null, fulltime: null, postmatch: null, standings: null },
     templateIds: { ...settings.defaultTemplates },
+    goalVideo: null,
     createdAt: now,
     updatedAt: now,
   };

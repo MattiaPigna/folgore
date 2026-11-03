@@ -28,6 +28,8 @@ import {
 import { useRoute } from '../../store/routeStore';
 import { editor, type AlignMode } from '../../editor/controller';
 import { fitImageToBox, sceneBox } from '../../editor/geometry';
+import { ANIM_PRESETS, ANIM_PRESET_LABELS, DEFAULT_ANIM, type AnimConfig, type AnimPreset } from '../../editor/videoAnim';
+import { COLOR_FX_LABELS, COLOR_FX_OPTIONS, type ColorFx } from '../../editor/colorFx';
 import { getAssetUrl } from '../../services/assets';
 import { IMAGE_BINDING_LABELS, TEXT_BINDING_LABELS, isImageBinding } from '../../services/bindings';
 import { BUILTIN_FONTS } from '../../services/fonts';
@@ -63,7 +65,7 @@ const ALIGNS: { mode: AlignMode; icon: typeof AlignLeft; title: string }[] = [
   { mode: 'bottom', icon: AlignEndHorizontal, title: 'Allinea in basso' },
 ];
 
-export function PropertiesPanel() {
+export function PropertiesPanel({ videoMode = false }: { videoMode?: boolean } = {}) {
   useEditorUI((s) => s.version);
   const fonts = useApp((s) => s.fonts);
   const addAsset = useApp((s) => s.addAsset);
@@ -194,6 +196,8 @@ export function PropertiesPanel() {
         {!isSel && <SliderRow label="Opacità" min={0} max={1} step={0.01} value={obj.opacity ?? 1} onChange={(v) => editor.setProps(obj, { opacity: v })} format={pct} />}
       </div>
 
+      {videoMode && !isSel && <AnimationSection obj={obj} />}
+
       {isSel && <MultiEditSection sel={obj as ActiveSelection} />}
       {isText && <TextSection obj={obj} customFonts={fonts.map((f) => f.family)} />}
       {isText && <TextEffectsSection obj={obj} />}
@@ -307,6 +311,46 @@ export function PropertiesPanel() {
         </div>
       )}
     </>
+  );
+}
+
+function AnimationSection({ obj }: { obj: FabricObject }) {
+  const anim = obj.anim ?? DEFAULT_ANIM;
+  const set = (patch: Partial<AnimConfig>) => editor.setProps(obj, { anim: { ...anim, ...patch } }, true);
+  return (
+    <div className="section">
+      <div className="section-title">Animazione</div>
+      <div className="field">
+        <label>Entrata</label>
+        <select className="select sm" value={anim.preset} onChange={(e) => set({ preset: e.target.value as AnimPreset })}>
+          {ANIM_PRESETS.map((p) => (
+            <option key={p} value={p}>
+              {ANIM_PRESET_LABELS[p]}
+            </option>
+          ))}
+        </select>
+      </div>
+      {anim.preset !== 'none' && (
+        <div className="grid-2" style={{ gap: 6 }}>
+          <NumField label="Inizio (s)" min={0} max={30} step={0.1} decimals={1} value={anim.start} onChange={(v) => set({ start: Math.max(0, v) })} />
+          <NumField label="Durata (s)" min={0.1} max={5} step={0.1} decimals={1} value={anim.duration} onChange={(v) => set({ duration: Math.max(0.1, v) })} />
+        </div>
+      )}
+      <div className="field">
+        <label>Effetto colore (per tutta la durata)</label>
+        <select
+          className="select sm"
+          value={obj.colorFx ?? 'none'}
+          onChange={(e) => editor.setProps(obj, { colorFx: e.target.value as ColorFx }, true)}
+        >
+          {COLOR_FX_OPTIONS.map((fx) => (
+            <option key={fx} value={fx}>
+              {COLOR_FX_LABELS[fx]}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
   );
 }
 

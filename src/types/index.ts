@@ -80,6 +80,12 @@ export interface GraphicDoc {
   json: any;
   templateId: string | null;
   updatedAt: number;
+  /** Present only for the animated goal video doc: global timing/effects on top of the per-object `anim`. */
+  video?: {
+    duration: number;
+    accent: string;
+    extras: { burst: 'none' | 'confetti' | 'shapes'; shockwave: boolean; shake: boolean; flash: boolean; impactTime: number };
+  };
 }
 
 export interface Match {
@@ -105,6 +111,8 @@ export interface Match {
   photoId: string | null;
   graphics: Record<GraphicKind, GraphicDoc | null>;
   templateIds: Record<GraphicKind, string>;
+  /** Animated goal video template, shared by every goal of this match (per-goal data is bound at render time). */
+  goalVideo: GraphicDoc | null;
   /** Format used when a graphic is first created from a built-in template. */
   format?: FormatSpec;
   createdAt: number;

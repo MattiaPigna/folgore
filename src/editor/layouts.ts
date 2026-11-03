@@ -72,7 +72,7 @@ function veil(W: number, H: number, opacity: number): Rect {
   return new Rect({ id: uid(), name: 'Velo scuro', role: 'decor', left: 0, top: 0, width: W, height: H, fill: '#000000', opacity, strokeWidth: 0 });
 }
 
-interface TextOpts {
+export interface TextOpts {
   name: string;
   text: string;
   binding?: string;
@@ -92,7 +92,7 @@ interface TextOpts {
   keepCase?: boolean;
 }
 
-function text(o: TextOpts): Textbox {
+export function text(o: TextOpts): Textbox {
   return new Textbox(o.text, {
     id: uid(),
     name: o.name,
@@ -124,7 +124,7 @@ function titleShadow(u: number) {
   return new Shadow({ color: 'rgba(200,16,32,0.9)', blur: 22 * u, offsetX: 0, offsetY: 5 * u });
 }
 
-async function image(
+export async function image(
   src: string,
   o: { name: string; binding: string; cx: number; cy: number; boxW: number; boxH: number; fitMode?: 'contain' | 'cover' },
 ): Promise<FabricImage> {

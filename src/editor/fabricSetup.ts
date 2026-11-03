@@ -1,5 +1,7 @@
 import { Canvas2dFilterBackend, FabricObject, InteractiveFabricObject, setFilterBackend } from 'fabric';
 import { installTextEffects } from './textEffects';
+import type { AnimConfig } from './videoAnim';
+import type { BgFx, ColorFx } from './colorFx';
 
 declare module 'fabric' {
   interface FabricObject {
@@ -20,6 +22,12 @@ declare module 'fabric' {
     textCase?: 'upper' | 'lower' | 'title' | 'none';
     imgFx?: string;
     imgFxAmount?: number;
+    /** Goal video only: entrance animation (not used by the static graphics editor). */
+    anim?: AnimConfig;
+    /** Goal video only: continuous (whole-video) color/glow effect. */
+    colorFx?: ColorFx;
+    /** Goal video only: continuous animated background effect (meaningful on the background object). */
+    bgFx?: BgFx;
   }
   interface SerializedObjectProps {
     id?: string;
@@ -39,6 +47,9 @@ declare module 'fabric' {
     textCase?: 'upper' | 'lower' | 'title' | 'none';
     imgFx?: string;
     imgFxAmount?: number;
+    anim?: AnimConfig;
+    colorFx?: ColorFx;
+    bgFx?: BgFx;
   }
 }
 
@@ -61,6 +72,9 @@ export const CUSTOM_PROPS: any[] = [
   'textCase',
   'imgFx',
   'imgFxAmount',
+  'anim',
+  'colorFx',
+  'bgFx',
   'selectable',
   'evented',
   'lockMovementX',

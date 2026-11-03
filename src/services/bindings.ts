@@ -1,4 +1,4 @@
-import { computeScore, formatGoal, isFirstHalf } from './score';
+import { computeScore, formatGoal, formatMinute, isFirstHalf, scoreAround } from './score';
 import { sameTeam } from './standings';
 import { activeSponsors, mainSponsor } from './sponsorUtils';
 import type { GraphicKind, Match, Settings } from '../types';
@@ -227,4 +227,42 @@ export function resolveVisibility(binding: string, settings: Settings): boolean 
   if (!row) return false;
   if (binding.startsWith('stHi:')) return !!league?.favoriteTeam && sameTeam(row.team, league.favoriteTeam);
   return true;
+}
+
+/* ---------- goal video (per-goal data, not tied to a GraphicKind) ---------- */
+
+export type GoalBinding = 'goal:scorer' | 'goal:minute' | 'goal:teamName' | 'goal:scoreAfter' | 'goal:topLabel';
+
+export const GOAL_BINDING_LABELS: Record<GoalBinding, string> = {
+  'goal:scorer': 'Marcatore',
+  'goal:minute': 'Minuto e tipo gol',
+  'goal:teamName': 'Squadra che segna',
+  'goal:scoreAfter': 'Risultato dopo il gol',
+  'goal:topLabel': 'Giornata e competizione',
+};
+
+export function isGoalBinding(b: string | undefined): b is GoalBinding {
+  return !!b && b.startsWith('goal:');
+}
+
+/** Resolves a `goal:*` binding for a specific goal. Empty string if the goal no longer exists. */
+export function resolveGoalText(binding: GoalBinding, match: Match, goalId: string, settings: Settings): string {
+  const goal = match.goals.find((g) => g.id === goalId);
+  if (!goal) return '';
+  const up = (s: string) => (settings.uppercaseInfo ? s.toUpperCase() : s);
+  const teamName = goal.team === 'home' ? match.homeName : match.awayName;
+  switch (binding) {
+    case 'goal:scorer':
+      return goal.player.trim() || teamName;
+    case 'goal:minute':
+      return [formatMinute(goal), goal.type === 'penalty' ? 'SU RIGORE' : goal.type === 'own' ? 'AUTOGOL' : ''].filter(Boolean).join('  ·  ');
+    case 'goal:teamName':
+      return up(teamName);
+    case 'goal:scoreAfter': {
+      const around = scoreAround(match.goals, goalId);
+      return around ? `${around.next.home} - ${around.next.away}` : '0 - 0';
+    }
+    case 'goal:topLabel':
+      return up([match.competition.trim(), match.round.trim() ? `${match.round.trim()}ª GIORNATA` : ''].filter(Boolean).join(' · '));
+  }
 }

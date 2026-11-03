@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { GraphicKind } from '../types';
 import { GRAPHIC_KINDS } from '../types';
 
-export type Page = 'new' | 'archive' | 'standings' | 'teams' | 'logos' | 'sponsors' | 'studio' | 'templates' | 'settings' | 'editor';
+export type Page = 'new' | 'archive' | 'standings' | 'teams' | 'logos' | 'sponsors' | 'studio' | 'templates' | 'settings' | 'editor' | 'goalvideo';
 
 export interface Route {
   page: Page;
@@ -10,22 +10,29 @@ export interface Route {
   kind?: GraphicKind;
   /** Image opened in the retouching studio. */
   assetId?: string;
+  /** Goal video page: which goal to preview/export (undefined = latest goal, or sample data if none). */
+  goalId?: string;
 }
 
-const PAGES: Page[] = ['new', 'archive', 'standings', 'teams', 'logos', 'sponsors', 'studio', 'templates', 'settings', 'editor'];
+const PAGES: Page[] = ['new', 'archive', 'standings', 'teams', 'logos', 'sponsors', 'studio', 'templates', 'settings', 'editor', 'goalvideo'];
 
 function parse(hash: string): Route {
-  const [page, matchId, kind] = hash.replace(/^#\/?/, '').split('/');
+  const [page, matchId, extra] = hash.replace(/^#\/?/, '').split('/');
   if (page === 'studio') return { page: 'studio', assetId: matchId || undefined };
   if (page === 'editor' && matchId) {
-    return { page: 'editor', matchId, kind: GRAPHIC_KINDS.includes(kind as GraphicKind) ? (kind as GraphicKind) : 'matchday' };
+    return { page: 'editor', matchId, kind: GRAPHIC_KINDS.includes(extra as GraphicKind) ? (extra as GraphicKind) : 'matchday' };
   }
-  return { page: PAGES.includes(page as Page) && page !== 'editor' ? (page as Page) : 'archive' };
+  if (page === 'goalvideo' && matchId) {
+    return { page: 'goalvideo', matchId, goalId: extra && extra !== '-' ? extra : undefined };
+  }
+  return { page: PAGES.includes(page as Page) && page !== 'editor' && page !== 'goalvideo' ? (page as Page) : 'archive' };
 }
 
 function format(r: Route): string {
   if (r.page === 'studio' && r.assetId) return `#/studio/${r.assetId}`;
-  return r.page === 'editor' ? `#/editor/${r.matchId}/${r.kind ?? 'matchday'}` : `#/${r.page}`;
+  if (r.page === 'editor') return `#/editor/${r.matchId}/${r.kind ?? 'matchday'}`;
+  if (r.page === 'goalvideo') return `#/goalvideo/${r.matchId}/${r.goalId ?? '-'}`;
+  return `#/${r.page}`;
 }
 
 interface RouteState {

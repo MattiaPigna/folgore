@@ -33,6 +33,14 @@ export function computeScore(goals: Goal[], opts: { halfOnly?: boolean; halfEndM
   return s;
 }
 
+/** Score right before and right after a given goal, in chronological order (storage order isn't authoritative). */
+export function scoreAround(goals: Goal[], goalId: string): { prev: Score; next: Score } | null {
+  const sorted = sortGoals(goals);
+  const i = sorted.findIndex((g) => g.id === goalId);
+  if (i < 0) return null;
+  return { prev: computeScore(sorted.slice(0, i)), next: computeScore(sorted.slice(0, i + 1)) };
+}
+
 /** Given the team of the player who scored and the goal type, returns the credited team. */
 export function creditedTeam(playerTeam: 'home' | 'away', type: GoalType): 'home' | 'away' {
   if (type !== 'own') return playerTeam;
