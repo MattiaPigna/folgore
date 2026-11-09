@@ -1,0 +1,114 @@
+[
+  {
+    "name": "Autoscuola Erdonea",
+    "tier": "partner",
+    "active": true,
+    "order": 0,
+    "file": "Autoscuola Erdonea.png",
+    "original": null
+  },
+  {
+    "name": "DC Service",
+    "tier": "partner",
+    "active": true,
+    "order": 1,
+    "file": "DC Service.png",
+    "original": null
+  },
+  {
+    "name": "Donatiello Costruzioni Generali",
+    "tier": "partner",
+    "active": true,
+    "order": 2,
+    "file": "Donatiello Costruzioni Generali.png",
+    "original": null
+  },
+  {
+    "name": "Ecoservice",
+    "tier": "partner",
+    "active": true,
+    "order": 3,
+    "file": "Ecoservice.png",
+    "original": null
+  },
+  {
+    "name": "Gruppo Locuratolo",
+    "tier": "partner",
+    "active": true,
+    "order": 4,
+    "file": "Gruppo Locuratolo.png",
+    "original": null
+  },
+  {
+    "name": "Lo Maestro",
+    "tier": "partner",
+    "active": true,
+    "order": 5,
+    "file": "Lo Maestro.png",
+    "original": null
+  },
+  {
+    "name": "Officine 171",
+    "tier": "partner",
+    "active": true,
+    "order": 6,
+    "file": "Officine 171.png",
+    "original": null
+  },
+  {
+    "name": "Pignatiello Costruzioni",
+    "tier": "partner",
+    "active": true,
+    "order": 7,
+    "file": "Pignatiello Costruzioni.png",
+    "original": null
+  },
+  {
+    "name": "Viscovo",
+    "tier": "partner",
+    "active": true,
+    "order": 8,
+    "file": "Viscovo.png",
+    "original": null
+  },
+  {
+    "name": "barzichella",
+    "tier": "partner",
+    "active": true,
+    "order": 9,
+    "file": "barzichella.png",
+    "original": null
+  },
+  {
+    "name": "impresit",
+    "tier": "partner",
+    "active": true,
+    "order": 10,
+    "file": "impresit.png",
+    "original": "originali/impresit.jpg"
+  },
+  {
+    "name": "Screenshot 2026 11 09 105127",
+    "tier": "partner",
+    "active": true,
+    "order": 11,
+    "file": "Screenshot 2026 11 09 105127.png",
+    "original": "originali/Screenshot 2026 11 09 105127.png"
+  },
+  {
+    "name": "Screenshot 2026 11 09 105209",
+    "tier": "partner",
+    "active": true,
+    "order": 12,
+    "file": "Screenshot 2026 11 09 105209.png",
+    "original": null
+  },
+  {
+    "name": "Terza Categoria Logo 2026",
+    "tier": "partner",
+    "active": true,
+    "order": 13,
+    "file": "Terza Categoria Logo 2026.png",
+    "original": null
+  }
+]

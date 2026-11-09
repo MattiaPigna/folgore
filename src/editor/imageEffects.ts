@@ -84,6 +84,16 @@ export const IMAGE_FX: ImageFx[] = [
     filters: () => [],
     shadow: (k, size) => new Shadow({ color: `rgba(0,0,0,${0.45 + 0.4 * k})`, blur: size * (0.02 + 0.06 * k), offsetX: 0, offsetY: size * (0.01 + 0.03 * k) }),
   },
+  {
+    id: 'shadow3d',
+    label: 'Ombra 3D',
+    hint: 'Ombra netta in rilievo (come sui testi)',
+    filters: () => [],
+    shadow: (k, size) => {
+      const d = size * (0.01 + 0.04 * k);
+      return new Shadow({ color: 'rgba(0,0,0,0.85)', blur: 0, offsetX: d, offsetY: d });
+    },
+  },
 ];
 
 /** Filters the user set by hand (brightness/contrast sliders) that effects must keep. */

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ArrowDown, ArrowUp, Eye, EyeOff, FolderDown, Handshake, Moon, Sun, Trash2, Upload, Wand2, WandSparkles } from 'lucide-react';
+import { ArrowDown, ArrowUp, Download, Eye, EyeOff, FolderDown, Handshake, Moon, Sun, Trash2, Upload, Wand2, WandSparkles } from 'lucide-react';
 import { useRoute } from '../../store/routeStore';
 import { Dropzone, confirmDialog, useAssetUrl } from '../../components/ui';
-import { SPONSOR_FOLDER_COUNT, TIER_LABELS, activeSponsors, addSponsorFile, importSponsorFolder, removeFlatBackground } from '../../services/sponsors';
+import { SPONSOR_FOLDER_COUNT, TIER_LABELS, activeSponsors, addSponsorFile, exportSponsorsZip, importSponsorFolder, removeFlatBackground } from '../../services/sponsors';
 import { db } from '../../services/database';
 import { useApp } from '../../store/appStore';
 import type { Sponsor, SponsorTier } from '../../types';
@@ -67,6 +67,20 @@ export function SponsorsPage() {
         <div className="row">
           <button className={`btn ${dark ? 'active' : ''}`} title="Anteprima su sfondo scuro / chiaro" onClick={() => setDark((v) => !v)}>
             {dark ? <Moon size={15} /> : <Sun size={15} />} Sfondo {dark ? 'scuro' : 'chiaro'}
+          </button>
+          <button
+            className="btn"
+            disabled={!sponsors.length}
+            title="Scarica tutti i loghi sponsor in un file ZIP"
+            onClick={async () => {
+              const n = await exportSponsorsZip().catch((e) => {
+                toast(`Errore nell'esportazione: ${(e as Error).message}`, 'error');
+                return 0;
+              });
+              if (n) toast(`${n} sponsor esportati.`, 'success');
+            }}
+          >
+            <Download size={15} /> Scarica sponsor (ZIP)
           </button>
           <button
             className="btn"

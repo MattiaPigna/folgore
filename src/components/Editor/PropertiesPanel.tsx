@@ -40,6 +40,7 @@ import { NumField, SliderRow } from '../ui';
 import { TextEffectsSection } from './TextEffectsSection';
 import { CASES, GroupBar, MultiEditSection } from './MultiEditSection';
 import { ImageEffectsSection } from './ImageEffectsSection';
+import { GRAD_DIRS, buildShapeGradient, readShapeGradient, type ShapeGrad } from '../../editor/shapeGradient';
 
 const r1 = (v: number) => Math.round(v * 10) / 10;
 const pct = (v: number) => `${Math.round(v * 100)}%`;
@@ -468,14 +469,69 @@ function TextSection({ obj, customFonts }: { obj: Textbox; customFonts: string[]
 
 function ShapeSection({ obj, isRect }: { obj: FabricObject; isRect: boolean }) {
   const solid = colorOf(obj.fill);
+  const grad = readShapeGradient(obj.fill);
+  const setGrad = (patch: Partial<ShapeGrad>, commit = false) => {
+    if (!grad) return;
+    editor.setProps(obj, { fill: buildShapeGradient({ ...grad, ...patch }), dirty: true }, commit);
+  };
   return (
     <div className="section">
       <div className="section-title">Forma</div>
       <div className="row">
         <span className="label" style={{ flex: 1 }}>Riempimento</span>
-        {solid === null && <span className="faint small">Gradiente</span>}
-        <input type="color" className="swatch" value={solid ?? '#000000'} onChange={(e) => editor.setProps(obj, { fill: e.target.value })} title="Imposta colore pieno" />
+        <div className="btn-group">
+          <button
+            className={`btn sm ${!grad ? 'active' : ''}`}
+            onClick={() => grad && editor.setProps(obj, { fill: grad.from.color, dirty: true }, true)}
+          >
+            Pieno
+          </button>
+          <button
+            className={`btn sm ${grad ? 'active' : ''}`}
+            onClick={() =>
+              !grad &&
+              editor.setProps(
+                obj,
+                { fill: buildShapeGradient({ from: { color: solid ?? '#000000', opacity: 1 }, to: { color: solid ?? '#000000', opacity: 0 }, dir: 'v' }), dirty: true },
+                true,
+              )
+            }
+            title="Sfumatura tra due colori o verso il trasparente"
+          >
+            Sfumato
+          </button>
+        </div>
+        {!grad && (
+          <input type="color" className="swatch" value={solid ?? '#000000'} onChange={(e) => editor.setProps(obj, { fill: e.target.value })} title="Colore pieno" />
+        )}
       </div>
+      {grad && (
+        <>
+          <div className="row">
+            <span className="label" style={{ flex: 1 }}>Direzione</span>
+            <div className="btn-group">
+              {GRAD_DIRS.map((d) => (
+                <button key={d.id} className={`btn sm ${grad.dir === d.id ? 'active' : ''}`} title={d.title} onClick={() => setGrad({ dir: d.id }, true)}>
+                  {d.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="row">
+            <span className="label" style={{ flex: 1 }}>{grad.dir === 'r' ? 'Centro' : 'Inizio'}</span>
+            <input type="color" className="swatch" value={grad.from.color} onChange={(e) => setGrad({ from: { ...grad.from, color: e.target.value } })} />
+          </div>
+          <SliderRow label="Opacità inizio" min={0} max={1} step={0.01} value={grad.from.opacity} onChange={(v) => setGrad({ from: { ...grad.from, opacity: v } })} format={pct} />
+          <div className="row">
+            <span className="label" style={{ flex: 1 }}>{grad.dir === 'r' ? 'Bordo' : 'Fine'}</span>
+            <input type="color" className="swatch" value={grad.to.color} onChange={(e) => setGrad({ to: { ...grad.to, color: e.target.value } })} />
+          </div>
+          <SliderRow label="Opacità fine" min={0} max={1} step={0.01} value={grad.to.opacity} onChange={(v) => setGrad({ to: { ...grad.to, opacity: v } })} format={pct} />
+          <button className="btn sm" onClick={() => setGrad({ from: grad.to, to: grad.from }, true)}>
+            Inverti
+          </button>
+        </>
+      )}
       <div className="row">
         <span className="label" style={{ flex: 1 }}>Bordo</span>
         <input type="color" className="swatch" value={colorOf(obj.stroke) ?? '#ffffff'} onChange={(e) => editor.setProps(obj, { stroke: e.target.value, strokeWidth: obj.strokeWidth || 2 })} />

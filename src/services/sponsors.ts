@@ -1,7 +1,7 @@
 import { useApp } from '../store/appStore';
 import type { Sponsor, SponsorTier } from '../types';
 export { TIER_LABELS, activeSponsors, mainSponsor } from './sponsorUtils';
-import { uid } from './database';
+import { db, uid } from './database';
 import { FileError, IMAGE_TYPES, fileBaseName, prepareImage } from './imageProcessing';
 
 /** Guesses the tier from the file name ("main-…", "tecnico-…", "ufficiale-…"). */
@@ -124,6 +124,58 @@ export async function addSponsorFile(file: File, opts: { name?: string; tier?: S
     app.toast(e instanceof FileError ? e.message : `Errore nel caricamento dello sponsor: ${(e as Error).message}`, 'error');
     return null;
   }
+}
+
+/* ---------- export ---------- */
+
+const EXT: Record<string, string> = { 'image/png': 'png', 'image/svg+xml': 'svg', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
+/** File-name prefix that `tierFromName` recognises, so a re-import keeps the tier. */
+const TIER_PREFIX: Record<SponsorTier, string> = { main: 'main ', technical: 'tecnico ', official: 'ufficiale ', partner: '' };
+
+/**
+ * Downloads every sponsor as a ZIP: the logo in use (ready for `sponsor/puliti/`),
+ * the untouched upload in `originali/` when the background was removed, and `sponsor.json`.
+ */
+export async function exportSponsorsZip(): Promise<number> {
+  const { default: JSZip } = await import('jszip');
+  const { downloadBlob } = await import('./export');
+  const sponsors = [...(useApp.getState().settings.sponsors ?? [])].sort((a, b) => a.order - b.order);
+  const zip = new JSZip();
+  const used = new Set<string>();
+  const unique = (base: string, ext: string) => {
+    let n = `${base}.${ext}`;
+    for (let i = 2; used.has(n.toLowerCase()); i++) n = `${base} ${i}.${ext}`;
+    used.add(n.toLowerCase());
+    return n;
+  };
+  const safe = (s: string) => s.replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim() || 'sponsor';
+  const meta: object[] = [];
+  let count = 0;
+  for (const s of sponsors) {
+    const rec = await db.get('assets', s.assetId);
+    if (!rec) continue;
+    const base = safe(`${TIER_PREFIX[s.tier]}${s.name}`);
+    const file = unique(base, EXT[rec.blob.type] ?? 'png');
+    zip.file(file, rec.blob);
+    let original: string | null = null;
+    if (s.originalAssetId) {
+      const orig = await db.get('assets', s.originalAssetId);
+      if (orig) {
+        original = `originali/${base}.${EXT[orig.blob.type] ?? 'png'}`;
+        zip.file(original, orig.blob);
+      }
+    }
+    meta.push({ name: s.name, tier: s.tier, active: s.active, order: s.order, file, original });
+    count++;
+  }
+  if (!count) {
+    useApp.getState().toast('Nessuno sponsor da esportare.', 'info');
+    return 0;
+  }
+  zip.file('sponsor.json', JSON.stringify(meta, null, 2));
+  const out = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
+  downloadBlob(out, `sponsor_${new Date().toISOString().slice(0, 10)}.zip`);
+  return count;
 }
 
 /* ---------- sponsor/ folder ---------- */
